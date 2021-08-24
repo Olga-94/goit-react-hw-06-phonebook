@@ -1,11 +1,15 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
 import { IoPersonAddOutline } from 'react-icons/io5';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { Form, Label, Input, Button } from './contactForm.styled';
+import { useDispatch } from 'react-redux';
+import contactsActions from '../../../redux/actions';
 
-export default function ContactForm({ onSubmit }){
+ export default function ContactForm(/*{ onSubmit }*/) {
+
+   const dispatch = useDispatch();
 
    const formik = useFormik({
      initialValues: {
@@ -21,23 +25,24 @@ export default function ContactForm({ onSubmit }){
          .required('Oбязательное поле'),
      }),
      onSubmit: (values, { setSubmitting, resetForm }) => {
-       onSubmit(values);
+       dispatch(contactsActions.addContact(values.name, values.number));
        setSubmitting(false);
-       resetForm()
+       resetForm();
      },
    });
   
+   const { handleSubmit, handleChange, isSubmitting, values, touched, errors } = formik;
    return (
-     <Form onSubmit={formik.handleSubmit}>
+     <Form onSubmit={handleSubmit}>
        <Label>Name
        <Input
          name="name"
          type="text"
-         onChange={formik.handleChange}
-         value={formik.values.name}
+         onChange={handleChange}
+         value={values.name}
          />
-       {formik.touched.name && formik.errors.name ? (
-         <>{formik.errors.name}</>
+       {touched.name && errors.name ? (
+         <>{errors.name}</>
          ) : null}
          </Label>
  
@@ -46,15 +51,15 @@ export default function ContactForm({ onSubmit }){
          id="number"
          name="number"
          type="text"
-         onChange={formik.handleChange}
-         value={formik.values.number}
+         onChange={handleChange}
+         value={values.number}
          />
-       {formik.touched.number && formik.errors.number ? (
-         <>{formik.errors.number}</>
+       {touched.number && errors.number ? (
+         <>{errors.number}</>
        ) : null}
        </Label>
 
-       <Button type="submit" disabled={formik.isSubmitting}>
+       <Button type="submit" disabled={isSubmitting}>
          <IoPersonAddOutline />
          Add contact
        </Button>
@@ -62,9 +67,11 @@ export default function ContactForm({ onSubmit }){
    );
 }
  
-ContactForm.propTypes = {
-    onSubmit: PropTypes.func,
-}
+// ContactForm.propTypes = {
+//     onSubmit: PropTypes.func,
+// }
+
+
 
 // export default function ContactForm({ onSubmit }) {
 //   return (
